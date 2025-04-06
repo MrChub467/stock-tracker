@@ -259,8 +259,12 @@ function displayNews(data, type) {
       const newsSummary = $("<div>").text(data[i].summary).addClass("summary");
       const newsLink = $("<a>").text("Link to article").attr("href", data[i].url);
       const newsContainer = $("<div>").addClass("articleContainer")
-  
-      newsContainer.append($("<div>").append(newsHeadline, newsImage).addClass("article-header"), newsTime, newsSummary, newsLink)
+      
+      if (data[i].image) {
+        newsContainer.append($("<div>").append(newsHeadline, newsImage).addClass("article-header"), newsTime, newsSummary, newsLink)
+      } else {
+        newsContainer.append($("<div>").append(newsHeadline).addClass("article-header"), newsTime, newsSummary, newsLink)
+      }
       newsSection.append(newsContainer);
       if (data.length === i + 1) break;
     }

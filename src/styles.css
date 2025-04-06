@@ -207,7 +207,7 @@ a {
 }
 .news img {
     aspect-ratio: auto;
-    height: 30px;
+    width: 150px;
 }
 .summary {
     width: 600px;
