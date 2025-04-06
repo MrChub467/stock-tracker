@@ -15,6 +15,26 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
+    gap: 10px;
+}
+
+.home-btn {
+    border: none;
+    border-radius: 50%;
+    width: 51px;
+    height: 51px;
+    background: #58629b;
+    cursor: pointer;
+}
+
+.home-btn img{
+    width: 30px;
+}
+.status {
+    color: white;
+    display: flex;
+    gap: 20px;
+    margin: 10px 0 20px 0;
 }
 
 .autocomplete {
@@ -97,6 +117,10 @@ body {
     color: #cac7ff;
 }
 
+.main-page {
+    color: white;
+}
+
 header {
     margin: auto;
     display: flex;
@@ -145,7 +169,7 @@ a {
 }
 
 #graph {
-    margin: 10px;
+    margin: 20px;
     width: 600px;
     height: 400px;
 }
@@ -157,7 +181,7 @@ a {
     align-items: center;
     color: white;
     text-align: center;
-    gap: 10px;
+    gap: 20px;
 }
 .news h2 { 
     text-shadow: 0px 0px 40px #cac7ff;
@@ -165,6 +189,14 @@ a {
     padding: 5px;
     font-size: 2rem;
     
+}
+.articleContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    border: 1px solid #cac7ff;
+    border-radius: 20px;
+    padding: 10px;
 }
 .article-header {
     display: flex;
