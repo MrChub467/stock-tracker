@@ -19,7 +19,7 @@ Uses two APIs to locate a stock with a user entered stock ticker. If the stock i
 Both of the APIs were very easy to use. All that needed to be done was to pass a few pieces of data to it and the API key. For example, to get the market news all you need to do is add /news and the category which is set to general to get general market news.
 
 ### Challenges
-- One of the APIs that I used at the start [Alpha Vantage](https://www.alphavantage.co/documentation/) had a strict limit of 25 API calls per day. This was not enough especially for testing purposes. So I found two different ones that have generous limits of 60 calls per minutes and 100 calls per day.
+- One of the APIs that I used at the start, [Alpha Vantage](https://www.alphavantage.co/documentation/), had a strict limit of 25 API calls per day. This was not enough especially for testing purposes. So I found two different ones that have generous limits of 60 calls per minutes and 100 calls per day.
 - The animations were a pain to figure out. It just required a lot of testing to eventually get it right.
 - Creating the search bar auto-complete was a pain. 
 
