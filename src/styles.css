@@ -121,6 +121,7 @@ body {
     color: white;
 }
 
+
 header {
     margin: auto;
     display: flex;
@@ -208,6 +209,7 @@ a {
 .news img {
     aspect-ratio: auto;
     width: 150px;
+    border-radius: 10px;
 }
 .summary {
     width: 600px;

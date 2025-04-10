@@ -1,8 +1,9 @@
 import "./styles.css";
+import looking from "./images/looking.gif"
 import $ from "jquery";
 import anychart from 'anychart';
 
-
+const speed = 600;
 const API_KEY1 = process.env.API_KEY1;
 const API_KEY2 = process.env.API_KEY2;
 $(".content").hide();
@@ -25,14 +26,30 @@ $( function() {
         dataType: "json"
       })
       .done(function(data, response) {
+        console.log(data)
         if (response === "429" || response === 429) {
           $(".details").text("Error: Data limit exceeded. Please try again later");
+        } else if (data.count === 0){
+          closeAllLists()
+          $(".content").empty().append([
+            $("<div>").text("Still looking for " + $("#ticker-search").val()).css({
+              "color": "red",
+              "font-size": "2rem"
+            }),
+            $(`<img src=${looking}>`).css({
+              "width": "500px",
+              "margin": "20px",
+              "border-radius": "20px"
+            })
+          ]);
         } else {
           autocomplete(data)
         }
       })
-      .fail(function() {
-        console.log("DIDN'T WORK");
+      .fail(function(response) {
+        if (response.status === 429) {
+          $(".content").text("Error: Data limit exceeded. Please try again later").css("color", "white");
+        } 
       });
     }
   })
@@ -44,14 +61,15 @@ function autocomplete(data) {
   $(".autocomplete").append(box);
 
   for (let i = 0; i < 5; ++i) {
-    if (data.result[i].symbol) {
-      const element = $("<div>").text(data.result[i].symbol);
+    if (data.count > 0) {
+      const element = $("<div>").text(`${data.result[i].symbol}, ${data.result[i].description}`);
       element.on("click", function(e) {
         $("#ticker-search").val("");
         closeAllLists();
         displayStock(data.result[i].symbol);
       });
       box.append(element);
+      if (data.count === i + 1) break;
     }
   } 
 }
@@ -61,13 +79,13 @@ function closeAllLists() {
 }
 
 function loadHomePage() {
-  $(".content").slideUp(1000).delay(1000);
+  $(".content").slideUp(speed).delay(speed);
   setTimeout(function() {
     clearContent();
     getMarketStatus();
     getMarketNews();
-  }, 1000)
-  $(".content").slideDown(1000);
+  }, speed)
+  $(".content").slideDown(speed);
 }
 function getMarketStatus() {
   $.ajax({
@@ -77,14 +95,16 @@ function getMarketStatus() {
     dataType: "json"
   })
   .done(function(data, response) {
-    if (response === "429" || response === 429) {
-      $(".details").text("Error: Data limit exceeded. Please try again later");
+    if (response.status === 429) {
+      console.log("Market Status fail")
     } else {
       displayMarketStatus(data);
     }
   })
-  .fail(function() {
-    console.log("Didn't get market status");
+  .fail(function(response) {
+    if (response.status === 429) {
+      $(".content").text("Error: Data limit exceeded. Please try again later").css("color", "white");
+    } 
   });
 }
 function displayMarketStatus(data) {
@@ -130,14 +150,13 @@ function displayMarketNews(data) {
 function displayStock(stock) {
   stock = stock.toUpperCase();
   
-  $(".content").slideUp(1000).delay(1000);
+  $(".content").slideUp(speed).delay(speed);
   setTimeout(function() {
     clearContent();
-    getGraphData(stock);
     getCompanyProfile(stock);
-    getCompanyNews(stock);
-  }, 1000)
-  $(".content").slideDown(1000);
+    getGraphData(stock);
+  }, speed)
+  $(".content").slideDown(speed);
     
 }
 
@@ -155,14 +174,14 @@ function getGraphData(stock) {
     dataType: "json"
   })
   .done(function(data) {
-    if (data) createGraph(data)
+    if (data.data.length > 0) createGraph(data, stock)
   })
   .fail(function() {
     console.log("Didn't get graph data");
   });
 }
 // Creates a graph from historical data
-function createGraph(rawData) {
+function createGraph(rawData, stock) {
   const chartData = rawData.data.map((item) => [
     new Date(item.date), item.data.open, item.data.high, item.data.low, item.data.close
   ]);
@@ -172,7 +191,7 @@ function createGraph(rawData) {
     
     const series = chart.plot(0).line(chartData);
     series.stroke({
-      color: "#8c2fff",
+      color: "#cac7ff",
       thickness: 2
     })
     // Create a Price Indicator series
@@ -194,6 +213,7 @@ function createGraph(rawData) {
 
     // Draw the chart
     chart.draw();
+
   });
 }
 // Gets the company profile details then calls a function that displays them
@@ -208,7 +228,7 @@ function getCompanyProfile(stock) {
     if (response === "429" || response === 429) {
       $(".details").text("Error: Data limit exceeded. Please try again later");
     } else {
-      if (Object.keys(data).length !== 0) displayCompanyProfile(data);
+      if (Object.keys(data).length !== 0) displayCompanyProfile(data, stock);
     }
   })
   .fail(function() {
@@ -216,7 +236,7 @@ function getCompanyProfile(stock) {
   });
 }
 // Displays company profile information
-function displayCompanyProfile(data) {
+function displayCompanyProfile(data, stock) {
   const companyName = $("<h1>").text(data.name).addClass("company-name");
   const companyCountry = $("<div>").text("Country: " + data.country);
   const companyExchange = $("<div>").text("Exchange: " + data.exchange);
@@ -226,6 +246,7 @@ function displayCompanyProfile(data) {
   const companyLogo = $("<img>").attr("src", data.logo);
   $(".content").append($("<header>").addClass("company-header").append(companyName, companyLogo));
   $(".content").append($("<div>").addClass("details").append(companyCountry, companyExchange, companyIndustry, companyIPO, companyWebsite));
+  getCompanyNews(stock);
 }
 // Gets company news from one week ago till now
 function getCompanyNews(stock) {
